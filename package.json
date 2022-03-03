@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.2",
+    "express-useragent": "^1.0.15",
+    "helmet": "^5.0.2",
     "mongoose": "^6.1.10",
     "shorthash": "^0.0.2",
     "validator": "^13.7.0"

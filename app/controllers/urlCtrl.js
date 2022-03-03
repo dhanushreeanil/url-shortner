@@ -1,3 +1,4 @@
+const shorthash = require("shorthash")
 const Url = require("../models/url")
 
 const urlCtlr = {}
@@ -59,14 +60,34 @@ urlCtlr.destroy = (req,res) => {
 }
 
 urlCtlr.redirect = (req,res) => {
-    const hash = req.params.hash
-    Url.findOne({ hashedUrl: hash })
-    .then((url) => {
-      res.redirect(url.originalUrl);
-    })
-    .catch((error) => {
-      res.json(error);
-    });
+    const hash = req.params.hash;
+    const userAgent = req.useragent;
+    console.log("userAgent", req.useragent)
+    const clicksNew = {
+      clickDateTime: new Date(),
+      ipAddress: Object.keys(userAgent.geoIp).length
+        ? ""
+        : "Couldn't find the Ip",
+      browser: userAgent.browser,
+      platform: userAgent.platform,
+      device: userAgent.isDesktop && !userAgent.isMobile ? "desktop" : "mobile",
+    };
+    Url.findOneAndUpdate({ hashedUrl: hash },{ $push: { clicks: clicksNew }}, {new:true})
+      .then((url) => {
+        url.count = url.count + 1
+        url.save()
+        .then((data)=>{
+            console.log(data,"data");
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+        console.log("hashedurl",url);
+        res.redirect(url.originalUrl);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 }
 
 module.exports = urlCtlr

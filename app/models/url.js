@@ -27,6 +27,21 @@ const urlSchema = new Schema({
     },
     hashedUrl : {
         type : String
+    },
+    count: {
+        type : Number,
+        default: 0
+    },
+    clicks: {
+        type : [
+        {
+          clickDateTime: { type: Date },
+          ipAddress: { type: String },
+          browser: { type: String },
+          platform: { type: String },
+          device: { type: String },
+        }
+      ]
     }
 })
 
@@ -35,6 +50,8 @@ urlSchema.pre("save", function (next) {
     this.hashedUrl = shortHash.unique(originalUrl);
     next();
   });
+
+
 
 const Url = mongoose.model("Url", urlSchema)
 
